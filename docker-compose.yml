@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  comfyui:
+    build: .
+    ports:
+      - "8188:8188"
+    volumes:
+      - ./models:/app/models
+      - ./output:/app/output
+      - ./workflows:/app/workflows
+      - ./custom_nodes:/app/custom_nodes
+      - ./workflows/final_masking_workflow.json:/app/web/workflows/default.json
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
